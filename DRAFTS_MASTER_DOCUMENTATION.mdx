@@ -1,0 +1,169 @@
+# Drafts – Master Documentation for Mintify
+
+> **Version:** 1.0 · **Last updated:** <!-- @CURSOR_DATE -->
+>
+> A single, comprehensive guide that consolidates every major Drafts design/implementation document. Wherever detailed explanations already exist, this master doc *links* directly to the original ProjectDoc to avoid duplication while giving readers a clear road-map.
+
+---
+
+## 📑 Table of Contents
+1. [Introduction](#introduction)
+2. [Architecture](#architecture)
+3. [Core Features](#core-features)
+4. [User Experience](#user-experience)
+5. [Technical Implementation](#technical-implementation)
+6. [Developer Guide](#developer-guide)
+7. [API Reference](#api-reference)
+8. [Change-Log](#change-log)
+
+---
+
+## 1. Introduction
+### What is Drafts?
+Drafts is a full-featured, AI-assisted note-taking platform that supports both **Local** and **Cloud** storage modes. Users can write rich-text notes, organise them in folders, and seamlessly switch between offline and online workflows.
+
+### Key Features
+- Rich-text editing powered by Plate.js
+- AI commands & slash-actions
+- Local File-System & Cloud modes
+- Smart autosave + backups
+- Real-time save-status indicator
+- Customisable toolbar
+
+### Technology Stack
+- **Next.js 14 / React 18**
+- **TypeScript** throughout
+- **Plate.js** rich-text editor
+- **File System Access API** (Chrome / Edge)
+- **Lucide-React** iconography
+- **Tailwind / Shadcn UI** for design system
+
+<details>
+<summary>Quick start</summary>
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Navigate to <http://localhost:3000> – the onboarding wizard will launch automatically.
+</details>
+
+---
+
+## 2. Architecture
+| Layer | Description | Key Docs |
+|-------|-------------|----------|
+| UI / Pages | Next.js App Router pages & Shadcn components | `TOOLBAR_BUTTON_GUIDE.md` |
+| Context | Global state (items, userMode, autosave) | `FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md` |
+| Data | LocalStorage, IndexedDB, File System Access API, (future) Cloud API | `FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md`, `FILE_LOADING_ON_REINIT.md` |
+| Services | Autosave, Backup, Content Loader | `CONTENT_LOADING_FIX.md`, `SAVE_STATUS_INDICATOR_GUIDE.md` |
+| Docs | Extensive Markdown docs in `/ProjectDocs` | *this file* |
+
+### High-Level Diagram
+```mermaid
+flowchart TD
+    subgraph Browser (Client)
+        A[Next.js UI]
+        A --> B(Context)
+        B --> C[File-System Service]
+        B --> D[Cloud Service]
+    end
+
+    C -->|FS Access API| E[(Local Disk)]
+    D -->|REST / GraphQL| F[(Cloud Storage)]
+```
+
+---
+
+## 3. Core Features
+### 3.1 Rich Text Editor
+- Built on **Plate.js** – fully modular Slate implementation
+- AI slash commands, math, code-block, Markdown import/export
+- Auto-format, comment threads, table support
+
+### 3.2 File Management
+| Mode | Storage | Reference Doc |
+|------|---------|--------------|
+| Local | File System Access API (Chromium) or browser LocalStorage fallback | `FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md` |
+| Cloud | (Road-map) S3-compatible backend, authenticated via Better-Auth | `AUTH_MODE_SWITCHING_SAFETY.md` |
+
+### 3.3 Autosave & Backups
+- Debounced 3-second autosave
+- SHA-hash change detection ⇒ writes only when content differs
+- Timestamped JSON backups (`note-backup-<epoch>.json`)
+- Real-time save-status indicator (idle/saving/saved/error)
+
+### 3.4 Toolbar Customisation
+Reference: `TOOLBAR_BUTTON_GUIDE.md`
+
+---
+
+## 4. User Experience
+### 4.1 Onboarding
+- Multi-step wizard picks **theme**, **storage mode**, & **first note**
+- Creates a *Getting Started* page programmatically (`AUTOMATIC_FIRST_PAGE_CREATION.md`)
+- If Local mode & folder chosen ➜ writes note immediately
+
+### 4.2 Returning Users
+- Detects previous mode & last folder path
+- **Folder Restoration Flow** – see `RETURNING_USER_FOLDER_RESTORATION.md`
+- **File Loading on Re-init** – see `FILE_LOADING_ON_REINIT.md`
+
+### 4.3 Mode Switching Safety
+- Switching from Local → Cloud triggers save & warn (unsaved changes) (`AUTH_MODE_SWITCHING_SAFETY.md`)
+- Cloud → Local allowed anytime
+
+---
+
+## 5. Technical Implementation
+Below is a map to detailed docs. Each bullet links to the authoritative markdown in `/ProjectDocs`.
+
+1. **File System Integration** – [`FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md`](./FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md)
+2. **Autosave / Backups** – Sections *Phase 3* inside file above
+3. **Load on Re-init** – [`FILE_LOADING_ON_REINIT.md`](./FILE_LOADING_ON_REINIT.md)
+4. **Save-Status Indicator** – [`SAVE_STATUS_INDICATOR_GUIDE.md`](./SAVE_STATUS_INDICATOR_GUIDE.md)
+5. **Content Loader Fixes** – [`CONTENT_LOADING_FIX.md`](./CONTENT_LOADING_FIX.md)
+6. **Onboarding File Saving Fix** – [`ONBOARDING_FILE_SAVING_FIX.md`](./ONBOARDING_FILE_SAVING_FIX.md)
+
+---
+
+## 6. Developer Guide
+### Setup & Installation
+1. Ensure **Node 18+** & **pnpm**
+2. `pnpm install`
+3. `pnpm dev` for local development
+
+### Code Architecture
+- **`src/lib/context.tsx`** – central state & business logic
+- **`src/components`** – Shadcn-style UI components
+- **`src/app`** – Next.js App Router pages
+
+### Testing
+- Unit tests planned with **Vitest**
+- Integration tests (Playwright) for critical flows (onboarding, editor, autosave)
+
+### Deployment
+- Vercel / Render – static Next.js output + Serverless API routes
+
+---
+
+## 7. API Reference (Quick-Look)
+| Function | Purpose |
+|----------|---------|
+| `selectLocalFolder()` | Prompts user, stores `FolderHandle` |
+| `loadFromLocalFolder()` | Reads JSON/TXT drafts, returns `DraftFile[]` |
+| `saveToLocalFolder()` | Writes/overwrites a draft file |
+| `autosaveContent()` | Debounced smart-save logic |
+| `restoreLastKnownFolder()` | Attempt folder restoration for returning users |
+
+Detailed type-signatures live inside [`FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md`](./FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md).
+
+---
+
+## 8. Change-Log
+- **1.0** – Initial master doc extracted & structured from individual ProjectDocs.
+
+---
+
+*For deep-dives, follow the internal links to each specialised doc inside `/ProjectDocs`. This master doc will be kept concise while the originals retain full detail.* 
