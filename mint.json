@@ -1,0 +1,273 @@
+{
+  "name": "Drafts",
+  "description": "Master Documentation for Mintify",
+  "version": "1.0",
+  "lastUpdated": "<!-- @CURSOR_DATE -->",
+  "summary": "A single, comprehensive guide that consolidates every major Drafts design/implementation document. Wherever detailed explanations already exist, this master doc links directly to the original ProjectDoc to avoid duplication while giving readers a clear road-map.",
+  "tableOfContents": [
+    {
+      "id": "introduction",
+      "title": "Introduction",
+      "sections": [
+        {
+          "id": "what-is-drafts",
+          "title": "What is Drafts?",
+          "content": "Drafts is a full-featured, AI-assisted note-taking platform that supports both Local and Cloud storage modes. Users can write rich-text notes, organise them in folders, and seamlessly switch between offline and online workflows."
+        },
+        {
+          "id": "key-features",
+          "title": "Key Features",
+          "items": [
+            "Rich-text editing powered by Plate.js",
+            "AI commands & slash-actions",
+            "Local File-System & Cloud modes",
+            "Smart autosave + backups",
+            "Real-time save-status indicator",
+            "Customisable toolbar"
+          ]
+        },
+        {
+          "id": "technology-stack",
+          "title": "Technology Stack",
+          "items": [
+            "Next.js 14 / React 18",
+            "TypeScript throughout",
+            "Plate.js rich-text editor",
+            "File System Access API (Chrome / Edge)",
+            "Lucide-React iconography",
+            "Tailwind / Shadcn UI for design system"
+          ]
+        },
+        {
+          "id": "quick-start",
+          "title": "Quick start",
+          "commands": [
+            "pnpm install",
+            "pnpm dev"
+          ],
+          "note": "Navigate to http://localhost:3000 – the onboarding wizard will launch automatically."
+        }
+      ]
+    },
+    {
+      "id": "architecture",
+      "title": "Architecture",
+      "layers": [
+        {
+          "name": "UI / Pages",
+          "description": "Next.js App Router pages & Shadcn components",
+          "docs": ["TOOLBAR_BUTTON_GUIDE.md"]
+        },
+        {
+          "name": "Context",
+          "description": "Global state (items, userMode, autosave)",
+          "docs": ["FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md"]
+        },
+        {
+          "name": "Data",
+          "description": "LocalStorage, IndexedDB, File System Access API, (future) Cloud API",
+          "docs": ["FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md", "FILE_LOADING_ON_REINIT.md"]
+        },
+        {
+          "name": "Services",
+          "description": "Autosave, Backup, Content Loader",
+          "docs": ["CONTENT_LOADING_FIX.md", "SAVE_STATUS_INDICATOR_GUIDE.md"]
+        },
+        {
+          "name": "Docs",
+          "description": "Extensive Markdown docs in /ProjectDocs",
+          "docs": ["this file"]
+        }
+      ],
+      "diagram": {
+        "type": "mermaid",
+        "content": "flowchart TD\n    subgraph Browser (Client)\n        A[Next.js UI]\n        A --> B(Context)\n        B --> C[File-System Service]\n        B --> D[Cloud Service]\n    end\n\n    C -->|FS Access API| E[(Local Disk)]\n    D -->|REST / GraphQL| F[(Cloud Storage)]"
+      }
+    },
+    {
+      "id": "core-features",
+      "title": "Core Features",
+      "sections": [
+        {
+          "id": "rich-text-editor",
+          "title": "Rich Text Editor",
+          "description": "Built on Plate.js – fully modular Slate implementation",
+          "features": [
+            "AI slash commands, math, code-block, Markdown import/export",
+            "Auto-format, comment threads, table support"
+          ]
+        },
+        {
+          "id": "file-management",
+          "title": "File Management",
+          "modes": [
+            {
+              "mode": "Local",
+              "storage": "File System Access API (Chromium) or browser LocalStorage fallback",
+              "referenceDoc": "FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md"
+            },
+            {
+              "mode": "Cloud",
+              "storage": "(Road-map) S3-compatible backend, authenticated via Better-Auth",
+              "referenceDoc": "AUTH_MODE_SWITCHING_SAFETY.md"
+            }
+          ]
+        },
+        {
+          "id": "autosave-backups",
+          "title": "Autosave & Backups",
+          "features": [
+            "Debounced 3-second autosave",
+            "SHA-hash change detection ⇒ writes only when content differs",
+            "Timestamped JSON backups (note-backup-<epoch>.json)",
+            "Real-time save-status indicator (idle/saving/saved/error)"
+          ]
+        },
+        {
+          "id": "toolbar-customisation",
+          "title": "Toolbar Customisation",
+          "reference": "TOOLBAR_BUTTON_GUIDE.md"
+        }
+      ]
+    },
+    {
+      "id": "user-experience",
+      "title": "User Experience",
+      "sections": [
+        {
+          "id": "onboarding",
+          "title": "Onboarding",
+          "description": "Multi-step wizard picks theme, storage mode, & first note",
+          "features": [
+            "Creates a Getting Started page programmatically (AUTOMATIC_FIRST_PAGE_CREATION.md)",
+            "If Local mode & folder chosen ➜ writes note immediately"
+          ]
+        },
+        {
+          "id": "returning-users",
+          "title": "Returning Users",
+          "description": "Detects previous mode & last folder path",
+          "flows": [
+            "Folder Restoration Flow – see RETURNING_USER_FOLDER_RESTORATION.md",
+            "File Loading on Re-init – see FILE_LOADING_ON_REINIT.md"
+          ]
+        },
+        {
+          "id": "mode-switching-safety",
+          "title": "Mode Switching Safety",
+          "rules": [
+            "Switching from Local → Cloud triggers save & warn (unsaved changes) (AUTH_MODE_SWITCHING_SAFETY.md)",
+            "Cloud → Local allowed anytime"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "technical-implementation",
+      "title": "Technical Implementation",
+      "description": "Below is a map to detailed docs. Each bullet links to the authoritative markdown in /ProjectDocs.",
+      "implementations": [
+        {
+          "title": "File System Integration",
+          "doc": "FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md"
+        },
+        {
+          "title": "Autosave / Backups",
+          "doc": "FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md",
+          "note": "Sections Phase 3 inside file above"
+        },
+        {
+          "title": "Load on Re-init",
+          "doc": "FILE_LOADING_ON_REINIT.md"
+        },
+        {
+          "title": "Save-Status Indicator",
+          "doc": "SAVE_STATUS_INDICATOR_GUIDE.md"
+        },
+        {
+          "title": "Content Loader Fixes",
+          "doc": "CONTENT_LOADING_FIX.md"
+        },
+        {
+          "title": "Onboarding File Saving Fix",
+          "doc": "ONBOARDING_FILE_SAVING_FIX.md"
+        }
+      ]
+    },
+    {
+      "id": "developer-guide",
+      "title": "Developer Guide",
+      "sections": [
+        {
+          "id": "setup-installation",
+          "title": "Setup & Installation",
+          "steps": [
+            "Ensure Node 18+ & pnpm",
+            "pnpm install",
+            "pnpm dev for local development"
+          ]
+        },
+        {
+          "id": "code-architecture",
+          "title": "Code Architecture",
+          "structure": [
+            "src/lib/context.tsx – central state & business logic",
+            "src/components – Shadcn-style UI components",
+            "src/app – Next.js App Router pages"
+          ]
+        },
+        {
+          "id": "testing",
+          "title": "Testing",
+          "plans": [
+            "Unit tests planned with Vitest",
+            "Integration tests (Playwright) for critical flows (onboarding, editor, autosave)"
+          ]
+        },
+        {
+          "id": "deployment",
+          "title": "Deployment",
+          "platforms": ["Vercel / Render – static Next.js output + Serverless API routes"]
+        }
+      ]
+    },
+    {
+      "id": "api-reference",
+      "title": "API Reference (Quick-Look)",
+      "functions": [
+        {
+          "name": "selectLocalFolder()",
+          "purpose": "Prompts user, stores FolderHandle"
+        },
+        {
+          "name": "loadFromLocalFolder()",
+          "purpose": "Reads JSON/TXT drafts, returns DraftFile[]"
+        },
+        {
+          "name": "saveToLocalFolder()",
+          "purpose": "Writes/overwrites a draft file"
+        },
+        {
+          "name": "autosaveContent()",
+          "purpose": "Debounced smart-save logic"
+        },
+        {
+          "name": "restoreLastKnownFolder()",
+          "purpose": "Attempt folder restoration for returning users"
+        }
+      ],
+      "note": "Detailed type-signatures live inside FILE_SYSTEM_REFACTOR_IMPLEMENTATION.md"
+    },
+    {
+      "id": "change-log",
+      "title": "Change-Log",
+      "versions": [
+        {
+          "version": "1.0",
+          "description": "Initial master doc extracted & structured from individual ProjectDocs"
+        }
+      ]
+    }
+  ],
+  "footer": "For deep-dives, follow the internal links to each specialised doc inside /ProjectDocs. This master doc will be kept concise while the originals retain full detail."
+} 
