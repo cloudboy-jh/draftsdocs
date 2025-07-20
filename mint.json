@@ -1,9 +1,41 @@
 {
   "name": "Drafts",
-  "description": "Master Documentation for Mintify",
+  "description": "Just you and your words",
   "version": "1.0",
-  "lastUpdated": "<!-- @CURSOR_DATE -->",
+  "lastUpdated": "Jul 20th , 2025,
   "summary": "A single, comprehensive guide that consolidates every major Drafts design/implementation document. Wherever detailed explanations already exist, this master doc links directly to the original ProjectDoc to avoid duplication while giving readers a clear road-map.",
+  "favicon": "/Draftslogo.svg",
+  "colors": {
+    "primary": "#000000",
+    "light": "#ffffff",
+    "dark": "#000000"
+  },
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": ["introduction"]
+    },
+    {
+      "group": "Architecture",
+      "pages": ["architecture"]
+    },
+    {
+      "group": "Features",
+      "pages": ["core-features"]
+    },
+    {
+      "group": "User Experience",
+      "pages": ["user-experience"]
+    },
+    {
+      "group": "Development",
+      "pages": ["technical-implementation", "developer-guide"]
+    },
+    {
+      "group": "Reference",
+      "pages": ["api-reference", "change-log"]
+    }
+  ],
   "tableOfContents": [
     {
       "id": "introduction",
@@ -269,5 +301,7 @@
       ]
     }
   ],
-  "footer": "For deep-dives, follow the internal links to each specialised doc inside /ProjectDocs. This master doc will be kept concise while the originals retain full detail."
+  "footer": {
+    "message": "For deep-dives, follow the internal links to each specialised doc inside /ProjectDocs. This master doc will be kept concise while the originals retain full detail."
+  }
 } 
